@@ -1,34 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:fluttertest/main.dart';
 import 'dart:convert';
-
-class User {
-  String firstName;
-  String lastName;
-  String email;
-  String mobile;
-  String password;
-
-  User({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.mobile,
-    required this.password,
-  });
-}
-
-class UserData extends ChangeNotifier {
-  User? user;
-
-  void setUser(User newUser) {
-    user = newUser;
-    notifyListeners();
-  }
-}
-
-
 
 class EmployeeDetailsScreen extends StatelessWidget {
   final int employeeId;
@@ -39,38 +12,90 @@ class EmployeeDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Employee Details'),
+        title: Text('Employee Details',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
+        backgroundColor: Colors.deepPurple,
       ),
       body: FutureBuilder(
-        // Implement API call to get employee details
         future: fetchEmployeeDetails(employeeId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             var employee = snapshot.data;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Name: ${employee?['employee_name'] ?? 'N/A'}'),
-                Text('Salary: ${employee?['employee_salary'] ?? 'N/A'}'),
-                Text('Age: ${employee?['employee_age'] ?? 'N/A'}'),
-              ],
-            );
+
+            if (employee != null) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Name: ${employee['data']['employee_name'] ?? 'N/A'}',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                  Text('Salary: ${employee['data']['employee_salary'] ?? 'N/A'}',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                  Text('Age: ${employee['data']['employee_age'] ?? 'N/A'}',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                ],
+              );
+            }
           }
+          return Text("data");
         },
       ),
     );
   }
+
   Future<Map<String, dynamic>> fetchEmployeeDetails(int employeeId) async {
-    final response = await http.get(Uri.parse('https://dummy.restapiexample.com/api/v1/e'));
+    final response = await http.get(
+        Uri.parse('https://dummy.restapiexample.com/api/v1/employee/$employeeId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load employee details');
     }
+  }
+}
+
+class Employee {
+  final int id;
+  final String employeeName;
+  final int employeeSalary;
+  final int employeeAge;
+  final String profileImage;
+
+  Employee({
+    required this.id,
+    required this.employeeName,
+    required this.employeeSalary,
+    required this.employeeAge,
+    required this.profileImage,
+  });
+
+  factory Employee.fromJson(Map<String, dynamic> json) {
+    return Employee(
+      id: json['id'],
+      employeeName: json['employee_name'],
+      employeeSalary: json['employee_salary'],
+      employeeAge: json['employee_age'],
+      profileImage: json['profile_image'],
+    );
+  }
+}
+class ApiResponse {
+  final String status;
+  final List<Employee> data;
+  final String message;
+
+  ApiResponse({
+    required this.status,
+    required this.data,
+    required this.message,
+  });
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    return ApiResponse(
+      status: json['status'],
+      data: List<Employee>.from(
+          json['data'].map((employee) => Employee.fromJson(employee))),
+      message: json['message'],
+    );
   }
 }

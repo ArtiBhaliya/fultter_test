@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertest/homescreen.dart';
 import 'package:fluttertest/main.dart';
 import 'package:fluttertest/signup.dart';
 
-void main(){
-  runApp(
-      MaterialApp(
-        title:"Login Screen",
-        debugShowCheckedModeBanner: false,
-        home:Login(),
-
-      )
-  );
-}
 
 class Login extends StatelessWidget {
   @override
@@ -22,7 +11,7 @@ class Login extends StatelessWidget {
     );
   }
 }
-
+// class for login Screen
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -59,7 +48,9 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
-                            } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(value)) {
+                            }
+                            //validation for check email address format
+                            else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(value)) {
                               return 'Please enter a valid email address';
                             }
                             return null;
@@ -114,11 +105,11 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Perform login logic here
+      //login logic
       String username = _emailController.text;
       String password = _passwordController.text;
 
-      // Add your authentication logic here
+      //authentication logic
       print('Username: $username, Password: $password');
       Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen(name:_emailController.text)),);
     }

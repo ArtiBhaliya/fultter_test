@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertest/homescreen.dart';
 import 'package:fluttertest/login.dart';
 import 'package:fluttertest/main.dart';
+
 
 void main() {
   runApp(SignUp());
@@ -135,19 +135,44 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+
   void _signUp() {
     if (_formKey.currentState?.validate() ?? false) {
-      // signup logic here
+      // signup logic
       String firstName = _firstNameController.text;
       String lastName = _lastNameController.text;
       String email = _emailController.text;
       String mobile = _mobileController.text;
       String password = _passwordController.text;
 
-      // Add your signup logic here
+      //signup logic
       print('First Name: $firstName, Last Name: $lastName, Email: $email, Mobile: $mobile, Password: $password');
 
       Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen(name: _firstNameController.text,)),);
     }
+  }
+}
+class User {
+  String firstName;
+  String lastName;
+  String email;
+  String mobile;
+  String password;
+
+  User({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.mobile,
+    required this.password,
+  });
+}
+
+class UserData extends ChangeNotifier {
+  User? user;
+
+  void setUser(User newUser) {
+    user = newUser;
+    notifyListeners();
   }
 }
